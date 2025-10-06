@@ -1,0 +1,295 @@
+// schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // ou "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============= USUÁRIOS E AUTENTICAÇÃO =============
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String
+  name          String
+  phone         String?
+  role          Role     @default(USER)
+  points        Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  pets                Pet[]
+  adoptionInterests   AdoptionInterest[]
+  adoptionProcesses   AdoptionProcess[]
+  reports             Report[]
+  donations           Donation[]
+  temporaryHomes      TemporaryHome[]
+  activityLogs        ActivityLog[]
+  userBadges          UserBadge[]
+
+  @@map("users")
+}
+
+model UserBadge {
+  id          String   @id @default(cuid())
+  userId      String
+  badge       String   // "Heroína dos Animais", "Protetor Veterano", etc.
+  earnedAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_badges")
+}
+
+enum Role {
+  USER
+  VOLUNTEER
+  ADMIN
+}
+
+// ============= ANIMAIS (PETS) =============
+model Pet {
+  id            String      @id @default(cuid())
+  name          String
+  species       Species
+  status        PetStatus
+  age           String
+  location      String
+  latitude      Float?
+  longitude     Float?
+  description   String
+  isAvailable   Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relacionamentos
+  userId              String
+  user                User                   @relation(fields: [userId], references: [id])
+  adoptionInterests   AdoptionInterest[]
+  adoptionProcesses   AdoptionProcess[]
+  reports             Report[]
+  temporaryHomes      TemporaryHome[]
+  petImages           PetImage[]
+
+  @@map("pets")
+}
+
+model PetImage {
+  id        String   @id @default(cuid())
+  petId     String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@map("pet_images")
+}
+
+enum Species {
+  CAO     // cão
+  GATO    // gato
+  OUTROS  // outros
+}
+
+enum PetStatus {
+  SAUDAVEL    // saudável
+  FILHOTE     // filhote
+  FERIDO      // ferido
+  AGRESSIVO   // agressivo
+}
+
+// ============= SISTEMA DE ADOÇÃO =============
+model AdoptionInterest {
+  id        String   @id @default(cuid())
+  userId    String
+  petId     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pet  Pet  @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, petId])
+  @@map("adoption_interests")
+}
+
+model AdoptionProcess {
+  id              String            @id @default(cuid())
+  userId          String
+  petId           String
+  status          AdoptionStatus    @default(PENDING)
+  submittedAt     DateTime          @default(now())
+  expectedDate    DateTime?
+  completedAt     DateTime?
+  rejectedAt      DateTime?
+  contact         String?
+  notes           String?
+  
+  user User @relation(fields: [userId], references: [id])
+  pet  Pet  @relation(fields: [petId], references: [id])
+
+  @@map("adoption_processes")
+}
+
+enum AdoptionStatus {
+  PENDING     // pendente
+  APPROVED    // aprovado
+  REJECTED    // rejeitado
+  COMPLETED   // concluído
+}
+
+// ============= SISTEMA DE DENÚNCIAS =============
+model Report {
+  id            String        @id @default(cuid())
+  type          ReportType
+  species       Species
+  location      String
+  latitude      Float?
+  longitude     Float?
+  description   String
+  reporter      String?
+  phone         String?
+  status        ReportStatus  @default(PENDENTE)
+  urgency       UrgencyLevel  @default(MEDIA)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  resolvedAt    DateTime?
+
+  // Relacionamentos
+  userId  String?
+  petId   String?  // Se o report resultar em cadastro de pet
+  user    User?    @relation(fields: [userId], references: [id])
+  pet     Pet?     @relation(fields: [petId], references: [id])
+
+  @@map("reports")
+}
+
+enum ReportType {
+  ABANDONO    // abandono
+  FERIDO      // ferido
+  AGRESSIVO   // agressivo
+  PERDIDO     // perdido
+}
+
+enum ReportStatus {
+  PENDENTE        // pendente
+  EM_ANDAMENTO    // em_andamento
+  RESOLVIDO       // resolvido
+}
+
+enum UrgencyLevel {
+  BAIXA   // baixa
+  MEDIA   // media
+  ALTA    // alta
+}
+
+// ============= SISTEMA DE DOAÇÕES =============
+model Donation {
+  id              String          @id @default(cuid())
+  userId          String
+  amount          Float
+  purpose         DonationPurpose @default(GERAL)
+  paymentMethod   PaymentMethod
+  status          PaymentStatus   @default(PENDING)
+  transactionId   String?
+  createdAt       DateTime        @default(now())
+  completedAt     DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("donations")
+}
+
+model DonationGoal {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  targetAmount  Float
+  currentAmount Float    @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("donation_goals")
+}
+
+enum DonationPurpose {
+  GERAL         // geral
+  RACAO         // ração
+  MEDICAMENTOS  // medicamentos
+  CASTRACAO     // castração
+  VETERINARIO   // veterinário
+}
+
+enum PaymentMethod {
+  PIX
+  CARTAO       // cartão
+  TRANSFERENCIA // transferência
+}
+
+enum PaymentStatus {
+  PENDING     // pendente
+  COMPLETED   // completado
+  FAILED      // falhou
+  CANCELLED   // cancelado
+}
+
+// ============= SISTEMA DE LAR TEMPORÁRIO =============
+model TemporaryHome {
+  id          String              @id @default(cuid())
+  userId      String
+  petId       String
+  status      TemporaryHomeStatus @default(ACTIVE)
+  startDate   DateTime            @default(now())
+  endDate     DateTime?
+  notes       String?
+
+  user User @relation(fields: [userId], references: [id])
+  pet  Pet  @relation(fields: [petId], references: [id])
+
+  @@map("temporary_homes")
+}
+
+enum TemporaryHomeStatus {
+  ACTIVE      // ativo
+  COMPLETED   // concluído
+  CANCELLED   // cancelado
+}
+
+// ============= SISTEMA DE GAMIFICAÇÃO =============
+model ActivityLog {
+  id          String       @id @default(cuid())
+  userId      String
+  action      ActivityType
+  points      Int
+  description String?
+  metadata    Json?        // Para dados extras como petId, reportId, etc.
+  createdAt   DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activity_logs")
+}
+
+enum ActivityType {
+  PET_REGISTRATION  // cadastro de pet (+100 pts)
+  ADOPTION          // adoção (+150 pts)
+  DONATION          // doação (+50 pts)
+  REPORT            // denúncia (+25 pts)
+  VOLUNTEER         // voluntariado (+75 pts)
+  RESCUE            // resgate (+100 pts)
+}
+
+// ============= Formulário de Adoção =============
+
+// ============= ÍNDICES PARA PERFORMANCE =============
+// Adicionar índices importantes:
+// @@index([email]) no User
+// @@index([species, status, isAvailable]) no Pet
+// @@index([userId, createdAt]) no ActivityLog
+// @@index([status, urgency, createdAt]) no Report
+// @@index([userId, status, createdAt]) no AdoptionProcess
+// @@index([userId, createdAt]) no Donation
