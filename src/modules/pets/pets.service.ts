@@ -46,6 +46,7 @@ class PetService {
             email: true,
           },
         },
+        adoptionProcesses: true,
       },
       orderBy: {
         createdAt: "desc",
@@ -65,6 +66,7 @@ class PetService {
             email: true,
           },
         },
+        adoptionProcesses: true,
       },
     });
   }

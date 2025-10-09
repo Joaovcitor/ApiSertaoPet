@@ -13,6 +13,8 @@ import petRoutes from "./modules/pets/pets.routes";
 import { errorHandler } from "./core/middleware/errorHandler";
 import { requestLogger } from "./core/middleware/requestLogger";
 import authRoutes from "./modules/auth/auth.routes";
+import adoptionRouter from "./modules/adoption/adoption.routes";
+import reportsRoutes from "./modules/reports/reports.routes";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -39,7 +41,9 @@ export class Server {
    */
   private configureSecurityMiddlewares(): void {
     // Middleware de segurança
-    this.app.use(helmet());
+    this.app.use(
+      helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })
+    );
 
     // CORS
     this.app.use(
@@ -47,10 +51,8 @@ export class Server {
         origin:
           process.env.NODE_ENV === "production"
             ? ["https://yourdomain.com"]
-            : ["http://localhost:3000", "http://localhost:5173"],
+            : ["http://localhost:8080", "http://localhost:5173"],
         credentials: true, // Permitir cookies
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allowedHeaders: ["Content-Type", "Authorization"],
       })
     );
   }
@@ -67,7 +69,7 @@ export class Server {
     this.app.use(cookieParser(process.env.COOKIE_SECRET));
 
     // Servir arquivos estáticos da pasta uploads
-    this.app.use('/uploads', express.static('uploads'));
+    this.app.use("/uploads", express.static("uploads"));
   }
 
   /**
@@ -105,9 +107,11 @@ export class Server {
    * Configurar rotas da API
    */
   private configureApiRoutes(): void {
-    this.app.use("/users", usersRoutes);
+    this.app.use("/user", usersRoutes);
     this.app.use("/auth", authRoutes);
     this.app.use("/pets", petRoutes);
+    this.app.use("/adoption", adoptionRouter);
+    this.app.use("/reports", reportsRoutes);
   }
 
   /**
