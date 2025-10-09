@@ -5,6 +5,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { Server as HttpServer } from "http";
+import { initSocket } from "@/core/socket";
 
 // Importar rotas
 import usersRoutes from "./modules/users/users.routes";
@@ -15,6 +16,7 @@ import { requestLogger } from "./core/middleware/requestLogger";
 import authRoutes from "./modules/auth/auth.routes";
 import adoptionRouter from "./modules/adoption/adoption.routes";
 import reportsRoutes from "./modules/reports/reports.routes";
+import chatRoutes from "./modules/chat/chat.routes";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -112,6 +114,7 @@ export class Server {
     this.app.use("/pets", petRoutes);
     this.app.use("/adoption", adoptionRouter);
     this.app.use("/reports", reportsRoutes);
+    this.app.use("/chat", chatRoutes);
   }
 
   /**
@@ -206,6 +209,12 @@ export class Server {
         console.log(`📍 Health check: http://localhost:${this.port}/health`);
         console.log(`🌍 Ambiente: ${process.env.NODE_ENV || "development"}`);
       });
+
+      // Inicializar Socket.IO
+      if (this.server) {
+        initSocket(this.server);
+        console.log("🔌 Socket.IO inicializado");
+      }
     } catch (error) {
       console.error("❌ Erro ao iniciar servidor:", error);
       process.exit(1);

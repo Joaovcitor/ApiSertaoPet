@@ -10,36 +10,54 @@ datasource db {
 
 // ============= USUÁRIOS E AUTENTICAÇÃO =============
 model User {
-  id            String   @id @default(cuid())
-  email         String   @unique
-  password      String
-  name          String
-  phone         String?
-  role          Role     @default(USER)
-  points        Int      @default(0)
-  isActive      Boolean  @default(true)
-  photo         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  role      Role     @default(USER)
+  points    Int      @default(0)
+  isActive  Boolean  @default(true)
+  photo     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relacionamentos
-  pets                Pet[]
-  adoptionInterests   AdoptionInterest[]
-  adoptionProcesses   AdoptionProcess[]
-  reports             Report[]
-  donations           Donation[]
-  temporaryHomes      TemporaryHome[]
-  activityLogs        ActivityLog[]
-  userBadges          UserBadge[]
+  pets              Pet[]
+  adoptionInterests AdoptionInterest[]
+  adoptionProcesses AdoptionProcess[]
+  reports           Report[]
+  donations         Donation[]
+  temporaryHomes    TemporaryHome[]
+  activityLogs      ActivityLog[]
+  userBadges        UserBadge[]
+
+  // Relações sociais e colaboração
+  posts                    Post[]                    @relation("UserPosts")
+  comments                 Comment[]                 @relation("UserComments")
+  reactions                Reaction[]                @relation("UserReactions")
+  followers                Follow[]                  @relation("UserFollowed")
+  following                Follow[]                  @relation("UserFollows")
+  organizationsOwned       Organization[]            @relation("UserOrganizationsOwned")
+  userOrganizations        UserOrganization[]        @relation("UserOrganizationsMembership")
+  verification             Verification?             @relation("UserVerification")
+  reviewedVerifications    Verification[]            @relation("VerificationReviewedBy")
+  casesCreated             Case[]                    @relation("UserCasesCreated")
+  assignedTasks            Task[]                    @relation("UserAssignedTasks")
+  eventSubscriptions       EventSubscription[]       @relation("UserEventSubscriptions")
+  conversationParticipants ConversationParticipant[] @relation("UserConversationParticipants")
+  messages                 Message[]                 @relation("UserMessages")
+  notifications            Notification[]            @relation("UserNotifications")
+  attachments              Attachment[]              @relation("UserAttachments")
 
   @@map("users")
 }
 
 model UserBadge {
-  id          String   @id @default(cuid())
-  userId      String
-  badge       String   // "Heroína dos Animais", "Protetor Veterano", etc.
-  earnedAt    DateTime @default(now())
+  id       String   @id @default(cuid())
+  userId   String
+  badge    String // "Heroína dos Animais", "Protetor Veterano", etc.
+  earnedAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -54,27 +72,28 @@ enum Role {
 
 // ============= ANIMAIS (PETS) =============
 model Pet {
-  id            String      @id @default(cuid())
-  name          String
-  species       Species
-  status        PetStatus
-  age           String
-  location      String
-  latitude      Float?
-  longitude     Float?
-  description   String
-  isAvailable   Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  
+  id          String    @id @default(cuid())
+  name        String
+  species     Species
+  status      PetStatus
+  age         String
+  location    String
+  latitude    Float?
+  longitude   Float?
+  description String
+  isAvailable Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
   // Relacionamentos
-  userId              String
-  user                User                   @relation(fields: [userId], references: [id])
-  adoptionInterests   AdoptionInterest[]
-  adoptionProcesses   AdoptionProcess[]
-  reports             Report[]
-  temporaryHomes      TemporaryHome[]
-  petImages           PetImage[]
+  userId            String
+  user              User               @relation(fields: [userId], references: [id])
+  adoptionInterests AdoptionInterest[]
+  adoptionProcesses AdoptionProcess[]
+  reports           Report[]
+  temporaryHomes    TemporaryHome[]
+  petImages         PetImage[]
+  Case              Case[]
 
   @@map("pets")
 }
@@ -91,16 +110,16 @@ model PetImage {
 }
 
 enum Species {
-  CAO     // cão
-  GATO    // gato
-  OUTROS  // outros
+  CAO // cão
+  GATO // gato
+  OUTROS // outros
 }
 
 enum PetStatus {
-  SAUDAVEL    // saudável
-  FILHOTE     // filhote
-  FERIDO      // ferido
-  AGRESSIVO   // agressivo
+  SAUDAVEL // saudável
+  FILHOTE // filhote
+  FERIDO // ferido
+  AGRESSIVO // agressivo
 }
 
 // ============= SISTEMA DE ADOÇÃO =============
@@ -118,17 +137,17 @@ model AdoptionInterest {
 }
 
 model AdoptionProcess {
-  id              String            @id @default(cuid())
-  userId          String
-  petId           String
-  status          AdoptionStatus    @default(PENDING)
-  submittedAt     DateTime          @default(now())
-  expectedDate    DateTime?
-  completedAt     DateTime?
-  rejectedAt      DateTime?
-  contact         String?
-  notes           String?
-  
+  id           String         @id @default(cuid())
+  userId       String
+  petId        String
+  status       AdoptionStatus @default(PENDING)
+  submittedAt  DateTime       @default(now())
+  expectedDate DateTime?
+  completedAt  DateTime?
+  rejectedAt   DateTime?
+  contact      String?
+  notes        String?
+
   user User @relation(fields: [userId], references: [id])
   pet  Pet  @relation(fields: [petId], references: [id])
 
@@ -136,68 +155,68 @@ model AdoptionProcess {
 }
 
 enum AdoptionStatus {
-  PENDING     // pendente
-  APPROVED    // aprovado
-  REJECTED    // rejeitado
-  COMPLETED   // concluído
+  PENDING // pendente
+  APPROVED // aprovado
+  REJECTED // rejeitado
+  COMPLETED // concluído
 }
 
 // ============= SISTEMA DE DENÚNCIAS =============
 model Report {
-  id            String        @id @default(cuid())
-  type          ReportType
-  species       Species
-  location      String
-  latitude      Float?
-  longitude     Float?
-  description   String
-  reporter      String?
-  phone         String?
-  status        ReportStatus  @default(PENDENTE)
-  urgency       UrgencyLevel  @default(MEDIA)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  resolvedAt    DateTime?
+  id          String       @id @default(cuid())
+  type        ReportType
+  species     Species
+  location    String
+  latitude    Float?
+  longitude   Float?
+  description String
+  reporter    String?
+  phone       String?
+  status      ReportStatus @default(PENDENTE)
+  urgency     UrgencyLevel @default(MEDIA)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  resolvedAt  DateTime?
 
   // Relacionamentos
-  userId  String?
-  petId   String?  // Se o report resultar em cadastro de pet
-  user    User?    @relation(fields: [userId], references: [id])
-  pet     Pet?     @relation(fields: [petId], references: [id])
+  userId String?
+  petId  String? // Se o report resultar em cadastro de pet
+  user   User?   @relation(fields: [userId], references: [id])
+  pet    Pet?    @relation(fields: [petId], references: [id])
 
   @@map("reports")
 }
 
 enum ReportType {
-  ABANDONO    // abandono
-  FERIDO      // ferido
-  AGRESSIVO   // agressivo
-  PERDIDO     // perdido
+  ABANDONO // abandono
+  FERIDO // ferido
+  AGRESSIVO // agressivo
+  PERDIDO // perdido
 }
 
 enum ReportStatus {
-  PENDENTE        // pendente
-  EM_ANDAMENTO    // em_andamento
-  RESOLVIDO       // resolvido
+  PENDENTE // pendente
+  EM_ANDAMENTO // em_andamento
+  RESOLVIDO // resolvido
 }
 
 enum UrgencyLevel {
-  BAIXA   // baixa
-  MEDIA   // media
-  ALTA    // alta
+  BAIXA // baixa
+  MEDIA // media
+  ALTA // alta
 }
 
 // ============= SISTEMA DE DOAÇÕES =============
 model Donation {
-  id              String          @id @default(cuid())
-  userId          String
-  amount          Float
-  purpose         DonationPurpose @default(GERAL)
-  paymentMethod   PaymentMethod
-  status          PaymentStatus   @default(PENDING)
-  transactionId   String?
-  createdAt       DateTime        @default(now())
-  completedAt     DateTime?
+  id            String          @id @default(cuid())
+  userId        String
+  amount        Float
+  purpose       DonationPurpose @default(GERAL)
+  paymentMethod PaymentMethod
+  status        PaymentStatus   @default(PENDING)
+  transactionId String?
+  createdAt     DateTime        @default(now())
+  completedAt   DateTime?
 
   user User @relation(fields: [userId], references: [id])
 
@@ -218,35 +237,35 @@ model DonationGoal {
 }
 
 enum DonationPurpose {
-  GERAL         // geral
-  RACAO         // ração
-  MEDICAMENTOS  // medicamentos
-  CASTRACAO     // castração
-  VETERINARIO   // veterinário
+  GERAL // geral
+  RACAO // ração
+  MEDICAMENTOS // medicamentos
+  CASTRACAO // castração
+  VETERINARIO // veterinário
 }
 
 enum PaymentMethod {
   PIX
-  CARTAO       // cartão
+  CARTAO // cartão
   TRANSFERENCIA // transferência
 }
 
 enum PaymentStatus {
-  PENDING     // pendente
-  COMPLETED   // completado
-  FAILED      // falhou
-  CANCELLED   // cancelado
+  PENDING // pendente
+  COMPLETED // completado
+  FAILED // falhou
+  CANCELLED // cancelado
 }
 
 // ============= SISTEMA DE LAR TEMPORÁRIO =============
 model TemporaryHome {
-  id          String              @id @default(cuid())
-  userId      String
-  petId       String
-  status      TemporaryHomeStatus @default(ACTIVE)
-  startDate   DateTime            @default(now())
-  endDate     DateTime?
-  notes       String?
+  id        String              @id @default(cuid())
+  userId    String
+  petId     String
+  status    TemporaryHomeStatus @default(ACTIVE)
+  startDate DateTime            @default(now())
+  endDate   DateTime?
+  notes     String?
 
   user User @relation(fields: [userId], references: [id])
   pet  Pet  @relation(fields: [petId], references: [id])
@@ -255,9 +274,9 @@ model TemporaryHome {
 }
 
 enum TemporaryHomeStatus {
-  ACTIVE      // ativo
-  COMPLETED   // concluído
-  CANCELLED   // cancelado
+  ACTIVE // ativo
+  COMPLETED // concluído
+  CANCELLED // cancelado
 }
 
 // ============= SISTEMA DE GAMIFICAÇÃO =============
@@ -267,7 +286,7 @@ model ActivityLog {
   action      ActivityType
   points      Int
   description String?
-  metadata    Json?        // Para dados extras como petId, reportId, etc.
+  metadata    Json? // Para dados extras como petId, reportId, etc.
   createdAt   DateTime     @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -276,12 +295,274 @@ model ActivityLog {
 }
 
 enum ActivityType {
-  PET_REGISTRATION  // cadastro de pet (+100 pts)
-  ADOPTION          // adoção (+150 pts)
-  DONATION          // doação (+50 pts)
-  REPORT            // denúncia (+25 pts)
-  VOLUNTEER         // voluntariado (+75 pts)
-  RESCUE            // resgate (+100 pts)
+  PET_REGISTRATION // cadastro de pet (+100 pts)
+  ADOPTION // adoção (+150 pts)
+  DONATION // doação (+50 pts)
+  REPORT // denúncia (+25 pts)
+  VOLUNTEER // voluntariado (+75 pts)
+  RESCUE // resgate (+100 pts)
+}
+
+// ============= Sistemas de mídia social =============
+
+// ... existing code ...
+
+// ===== Enums sociais e colaboração =====
+enum ReactionType {
+  LIKE
+  SUPPORT
+  LOVE
+  CELEBRATE
+}
+
+enum CaseStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum NotificationType {
+  SYSTEM
+  CASE_UPDATE
+  EVENT_UPDATE
+  MESSAGE
+  FOLLOW
+  REACTION
+  COMMENT
+}
+
+// ===== Conteúdo e interação =====
+model Post {
+  id          String       @id @default(cuid())
+  authorId    String
+  author      User         @relation("UserPosts", fields: [authorId], references: [id])
+  content     Json
+  attachments Attachment[]
+  comments    Comment[]
+  reactions   Reaction[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Comment {
+  id          String       @id @default(cuid())
+  postId      String
+  post        Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User         @relation("UserComments", fields: [authorId], references: [id])
+  content     String
+  attachments Attachment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Reaction {
+  id        String       @id @default(cuid())
+  postId    String
+  post      Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User         @relation("UserReactions", fields: [userId], references: [id])
+  type      ReactionType
+  createdAt DateTime     @default(now())
+
+  @@unique([postId, userId])
+}
+
+model Follow {
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollows", fields: [followerId], references: [id])
+  following   User     @relation("UserFollowed", fields: [followingId], references: [id])
+  createdAt   DateTime @default(now())
+
+  @@id([followerId, followingId])
+}
+
+// ===== Organizações e verificação =====
+model Organization {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  verified    Boolean            @default(false)
+  ownerId     String
+  owner       User               @relation("UserOrganizationsOwned", fields: [ownerId], references: [id])
+  members     UserOrganization[]
+  events      Event[]
+  cases       Case[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model UserOrganization {
+  userId       String
+  orgId        String
+  role         String       @default("MEMBER")
+  user         User         @relation("UserOrganizationsMembership", fields: [userId], references: [id])
+  organization Organization @relation(fields: [orgId], references: [id])
+  joinedAt     DateTime     @default(now())
+
+  @@id([userId, orgId])
+}
+
+model Verification {
+  id           String             @id @default(cuid())
+  userId       String
+  user         User               @relation("UserVerification", fields: [userId], references: [id])
+  status       VerificationStatus @default(PENDING)
+  documents    Json?
+  reviewedById String?
+  reviewedBy   User?              @relation("VerificationReviewedBy", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  createdAt    DateTime           @default(now())
+
+  @@unique([userId])
+}
+
+// ===== Casos e tarefas =====
+model Case {
+  id            String        @id @default(cuid())
+  title         String
+  description   String?
+  status        CaseStatus    @default(OPEN)
+  createdById   String
+  createdBy     User          @relation("UserCasesCreated", fields: [createdById], references: [id])
+  assignedOrgId String?
+  assignedOrg   Organization? @relation(fields: [assignedOrgId], references: [id])
+  petId         String?
+  pet           Pet?          @relation(fields: [petId], references: [id])
+  tasks         Task[]
+  attachments   Attachment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  caseId      String
+  case        Case         @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  assigneeId  String?
+  assignee    User?        @relation("UserAssignedTasks", fields: [assigneeId], references: [id])
+  dueDate     DateTime?
+  attachments Attachment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// ===== Eventos e inscrições =====
+model Event {
+  id             String              @id @default(cuid())
+  title          String
+  description    String?
+  organizerOrgId String?
+  organizerOrg   Organization?       @relation(fields: [organizerOrgId], references: [id])
+  startAt        DateTime
+  endAt          DateTime?
+  location       String?
+  latitude       Float?
+  longitude      Float?
+  attachments    Attachment[]
+  subscriptions  EventSubscription[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+model EventSubscription {
+  eventId      String
+  userId       String
+  event        Event    @relation(fields: [eventId], references: [id])
+  user         User     @relation("UserEventSubscriptions", fields: [userId], references: [id])
+  subscribedAt DateTime @default(now())
+
+  @@id([eventId, userId])
+}
+
+// ===== Mensageria e conversas =====
+model Conversation {
+  id           String                    @id @default(cuid())
+  participants ConversationParticipant[]
+  messages     Message[]
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+}
+
+model ConversationParticipant {
+  conversationId String
+  userId         String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation("UserConversationParticipants", fields: [userId], references: [id])
+  joinedAt       DateTime     @default(now())
+
+  @@id([conversationId, userId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("UserMessages", fields: [senderId], references: [id])
+  content        String
+  attachments    Attachment[]
+  createdAt      DateTime     @default(now())
+}
+
+// ===== Notificações =====
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation("UserNotifications", fields: [userId], references: [id])
+  type      NotificationType
+  payload   Json?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+// ===== Anexos (relacionamento flexível) =====
+model Attachment {
+  id         String  @id @default(cuid())
+  url        String
+  mimeType   String?
+  size       Int?
+  uploaderId String
+  uploader   User    @relation("UserAttachments", fields: [uploaderId], references: [id])
+
+  // chaves opcionais para associação
+  postId String?
+  post   Post?   @relation(fields: [postId], references: [id])
+
+  commentId String?
+  comment   Comment? @relation(fields: [commentId], references: [id])
+
+  messageId String?
+  message   Message? @relation(fields: [messageId], references: [id])
+
+  eventId String?
+  event   Event?  @relation(fields: [eventId], references: [id])
+
+  caseId String?
+  case   Case?   @relation(fields: [caseId], references: [id])
+
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id])
+
+  createdAt DateTime @default(now())
 }
 
 // ============= Formulário de Adoção =============

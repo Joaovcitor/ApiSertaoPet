@@ -8,7 +8,6 @@ export interface PetDtoCreate {
   description: string;
   species: string;
   type: string;
-  userId: string;
   petImage: PetImageDtoCreate[];
 }
 export interface PetDtoUpdate {

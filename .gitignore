@@ -143,3 +143,5 @@ ecosystem.config.js
 .dockerignore
 Dockerfile
 docker-compose.yml
+
+uploads

@@ -21,11 +21,10 @@ class PetController {
 
       const petData: PetDtoCreate = {
         ...req.body,
-        userId,
         petImage: petImages,
       };
 
-      const pet = await PetService.create(petData);
+      const pet = await PetService.create(petData, userId);
 
       res.status(201).json({
         success: true,
