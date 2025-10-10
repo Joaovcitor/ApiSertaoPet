@@ -17,6 +17,10 @@ import authRoutes from "./modules/auth/auth.routes";
 import adoptionRouter from "./modules/adoption/adoption.routes";
 import reportsRoutes from "./modules/reports/reports.routes";
 import chatRoutes from "./modules/chat/chat.routes";
+import postsRouter from "./modules/posts/posts.routes";
+import commentRouter from "./modules/comments/comments.routes";
+import reactionRouter from "./modules/reaction/reaction.routes";
+import attachmentsRouter from "./modules/attachments/attachments.routes";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -115,6 +119,10 @@ export class Server {
     this.app.use("/adoption", adoptionRouter);
     this.app.use("/reports", reportsRoutes);
     this.app.use("/chat", chatRoutes);
+    this.app.use("/posts", postsRouter);
+    this.app.use("/comments", commentRouter);
+    this.app.use("/reactions", reactionRouter);
+    this.app.use("/attachments", attachmentsRouter);
   }
 
   /**
