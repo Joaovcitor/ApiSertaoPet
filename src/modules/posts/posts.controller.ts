@@ -33,7 +33,8 @@ class PostsController {
       const { id } = req.params;
       const post = await PostsService.getById(id);
       if (!post) {
-        return res.status(404).json({ message: "Post não encontrado" });
+        res.status(404).json({ message: "Post não encontrado" });
+        return;
       }
       res.json(post);
     } catch (error) {

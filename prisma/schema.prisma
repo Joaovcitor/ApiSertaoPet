@@ -183,6 +183,7 @@ model Report {
   petId  String? // Se o report resultar em cadastro de pet
   user   User?   @relation(fields: [userId], references: [id])
   pet    Pet?    @relation(fields: [petId], references: [id])
+  Case   Case[]
 
   @@map("reports")
 }
@@ -407,15 +408,22 @@ model Organization {
   updatedAt   DateTime           @updatedAt
 }
 
+enum OrgRole {
+  MEMBER
+  COORDINATOR
+  ADMIN
+}
+
 model UserOrganization {
   userId       String
   orgId        String
-  role         String       @default("MEMBER")
+  role         OrgRole      @default(MEMBER)
   user         User         @relation("UserOrganizationsMembership", fields: [userId], references: [id])
   organization Organization @relation(fields: [orgId], references: [id])
   joinedAt     DateTime     @default(now())
 
   @@id([userId, orgId])
+  @@index([role])
 }
 
 model Verification {
@@ -448,6 +456,17 @@ model Case {
   attachments   Attachment[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
+
+  // Novo: origem, prioridade, SLA e geolocalização
+  reportId  String?
+  report    Report?      @relation(fields: [reportId], references: [id])
+  priority  CasePriority @default(MEDIA)
+  slaDueAt  DateTime?
+  location  String?
+  latitude  Float?
+  longitude Float?
+
+  @@index([status, priority, assignedOrgId, createdAt])
 }
 
 model Task {
@@ -575,3 +594,9 @@ model Attachment {
 // @@index([status, urgency, createdAt]) no Report
 // @@index([userId, status, createdAt]) no AdoptionProcess
 // @@index([userId, createdAt]) no Donation
+enum CasePriority {
+  BAIXA
+  MEDIA
+  ALTA
+  CRITICA
+}

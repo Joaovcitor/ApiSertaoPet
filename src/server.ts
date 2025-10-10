@@ -21,6 +21,7 @@ import postsRouter from "./modules/posts/posts.routes";
 import commentRouter from "./modules/comments/comments.routes";
 import reactionRouter from "./modules/reaction/reaction.routes";
 import attachmentsRouter from "./modules/attachments/attachments.routes";
+import organizationsRouter from "./modules/organizations/organizations.routes";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -57,7 +58,11 @@ export class Server {
         origin:
           process.env.NODE_ENV === "production"
             ? ["https://yourdomain.com"]
-            : ["http://localhost:8080", "http://localhost:5173"],
+            : [
+                "http://localhost:8080",
+                "http://localhost:5173",
+                "http://192.168.1.35:8080",
+              ],
         credentials: true, // Permitir cookies
       })
     );
@@ -123,6 +128,7 @@ export class Server {
     this.app.use("/comments", commentRouter);
     this.app.use("/reactions", reactionRouter);
     this.app.use("/attachments", attachmentsRouter);
+    this.app.use("/organizations", organizationsRouter);
   }
 
   /**
