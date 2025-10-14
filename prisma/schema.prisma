@@ -179,13 +179,25 @@ model Report {
   resolvedAt  DateTime?
 
   // Relacionamentos
-  userId String?
-  petId  String? // Se o report resultar em cadastro de pet
-  user   User?   @relation(fields: [userId], references: [id])
-  pet    Pet?    @relation(fields: [petId], references: [id])
-  Case   Case[]
+  userId       String?
+  petId        String? // Se o report resultar em cadastro de pet
+  user         User?         @relation(fields: [userId], references: [id])
+  pet          Pet?          @relation(fields: [petId], references: [id])
+  Case         Case[]
+  reportImages ReportImage[]
 
   @@map("reports")
+}
+
+model ReportImage {
+  id        String   @id @default(cuid())
+  reportId  String
+  imageUrl  String
+  createdAt DateTime @default(now())
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("report_images")
 }
 
 enum ReportType {
