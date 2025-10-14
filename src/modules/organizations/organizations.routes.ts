@@ -3,6 +3,8 @@ import OrganizationsController from "./organizations.controller";
 import { authenticateToken } from "@/core/middleware/auth";
 import { validateQuery, PaginationQuerySchema, validateParams, IdParamSchema, validateSchema } from "@/utils/validation";
 import { UpdateOrganizationSchema, AddMemberSchema } from "./organizations.dto";
+import CasesController from "../cases/cases.controller";
+import { CreateCaseSchema, CasesQuerySchema } from "../cases/cases.dto";
 
 const organizationsRouter = Router();
 
@@ -59,6 +61,21 @@ organizationsRouter.delete(
   authenticateToken,
   validateParams(IdParamSchema),
   OrganizationsController.delete.bind(OrganizationsController)
+);
+
+// Casos da organização
+organizationsRouter.post(
+  "/:id/cases",
+  authenticateToken,
+  validateParams(IdParamSchema),
+  validateSchema(CreateCaseSchema),
+  CasesController.createForOrg.bind(CasesController)
+);
+organizationsRouter.get(
+  "/:id/cases",
+  validateParams(IdParamSchema),
+  validateQuery(CasesQuerySchema),
+  CasesController.listByOrg.bind(CasesController)
 );
 
 export default organizationsRouter;

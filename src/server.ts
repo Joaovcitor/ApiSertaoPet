@@ -22,6 +22,8 @@ import commentRouter from "./modules/comments/comments.routes";
 import reactionRouter from "./modules/reaction/reaction.routes";
 import attachmentsRouter from "./modules/attachments/attachments.routes";
 import organizationsRouter from "./modules/organizations/organizations.routes";
+import casesRouter from "./modules/cases/cases.routes";
+import tasksRouter from "./modules/cases/tasks.routes";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -129,6 +131,8 @@ export class Server {
     this.app.use("/reactions", reactionRouter);
     this.app.use("/attachments", attachmentsRouter);
     this.app.use("/organizations", organizationsRouter);
+    this.app.use("/cases", casesRouter);
+    this.app.use("/tasks", tasksRouter);
   }
 
   /**

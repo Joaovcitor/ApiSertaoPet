@@ -1,7 +1,11 @@
 import prisma from "@/prisma/prisma";
 import { Prisma } from "@prisma/client";
 import { createError } from "@/core/middleware/errorHandler";
-import { CreateOrganizationDto, UpdateOrganizationDto, AddMemberDto } from "./organizations.dto";
+import {
+  CreateOrganizationDto,
+  UpdateOrganizationDto,
+  AddMemberDto,
+} from "./organizations.dto";
 
 class OrganizationsService {
   async create(data: CreateOrganizationDto, ownerId: string) {
@@ -86,7 +90,32 @@ class OrganizationsService {
   }
 
   async getById(id: string) {
-    return prisma.organization.findUnique({ where: { id } });
+    return prisma.organization.findUnique({
+      where: { id },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                posts: true,
+                pets: true,
+                name: true,
+                photo: true,
+              },
+            },
+          },
+        },
+        cases: true,
+        events: true,
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
   }
 
   async update(id: string, data: UpdateOrganizationDto, requesterId: string) {
@@ -108,7 +137,10 @@ class OrganizationsService {
     }
 
     if (!isAdmin) {
-      throw createError("Você não tem permissão para atualizar esta organização", 403);
+      throw createError(
+        "Você não tem permissão para atualizar esta organização",
+        403
+      );
     }
 
     // Evitar duplicidade de nomes se nome for alterado
@@ -237,7 +269,11 @@ class OrganizationsService {
     }
 
     const created = await prisma.userOrganization.create({
-      data: { userId: data.userId, orgId, role: data.role ?? "MEMBER" as any },
+      data: {
+        userId: data.userId,
+        orgId,
+        role: data.role ?? ("MEMBER" as any),
+      },
       include: { user: true },
     });
 
@@ -252,14 +288,23 @@ class OrganizationsService {
 
     // Somente o owner pode deletar
     if (requesterId !== org.ownerId) {
-      throw createError("Você não tem permissão para deletar esta organização", 403);
+      throw createError(
+        "Você não tem permissão para deletar esta organização",
+        403
+      );
     }
 
     // Limpar relacionamentos que podem bloquear a exclusão
     await prisma.$transaction([
       prisma.userOrganization.deleteMany({ where: { orgId: orgId } }),
-      prisma.case.updateMany({ where: { assignedOrgId: orgId }, data: { assignedOrgId: null } }),
-      prisma.event.updateMany({ where: { organizerOrgId: orgId }, data: { organizerOrgId: null } }),
+      prisma.case.updateMany({
+        where: { assignedOrgId: orgId },
+        data: { assignedOrgId: null },
+      }),
+      prisma.event.updateMany({
+        where: { organizerOrgId: orgId },
+        data: { organizerOrgId: null },
+      }),
     ]);
 
     await prisma.organization.delete({ where: { id: orgId } });
