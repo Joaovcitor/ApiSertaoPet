@@ -5,7 +5,7 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { Server as HttpServer } from "http";
-import { initSocket } from "@/core/socket";
+import { initSocket } from "./core/socket";
 
 // Importar rotas
 import usersRoutes from "./modules/users/users.routes";
