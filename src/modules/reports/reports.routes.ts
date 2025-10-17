@@ -1,7 +1,7 @@
 import ReportsController from "./reports.controller";
 import { Router } from "express";
-import { authenticateToken } from "@/core/middleware/auth";
-import { uploadImages, handleMulterError } from "@/core/middleware/upload";
+import { authenticateToken } from "../../core/middleware/auth";
+import { uploadImages, handleMulterError } from "../../core/middleware/upload";
 
 const reportsRoutes = Router();
 

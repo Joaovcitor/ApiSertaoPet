@@ -2,8 +2,8 @@ import { Router } from "express";
 import CasesController from "./cases.controller";
 import TasksController from "./tasks.controller";
 import { CreateTaskSchema, TasksQuerySchema } from "./tasks.dto";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateSchema, validateParams, validateQuery, IdParamSchema } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateSchema, validateParams, validateQuery, IdParamSchema } from "../../utils/validation";
 import { CreateCaseSchema, CasesQuerySchema, UpdateCaseSchema } from "./cases.dto";
 
 const casesRouter = Router();

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import PetController from "./pets.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { uploadImages, handleMulterError } from "@/core/middleware/upload";
+import { authenticateToken } from "../../core/middleware/auth";
+import { uploadImages, handleMulterError } from "../../core/middleware/upload";
 
 const petRoutes = Router();
 

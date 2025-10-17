@@ -1,6 +1,6 @@
-import prisma from "@/prisma/prisma";
-import { getIO } from "@/core/socket";
-import { createError } from "@/core/middleware/errorHandler";
+import prisma from "../../prisma/prisma";
+import { getIO } from "../../core/socket";
+import { createError } from "../../core/middleware/errorHandler";
 import type { CreateConversationDto, MessagesQuery } from "./chat.dto";
 
 class ChatService {

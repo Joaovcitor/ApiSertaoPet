@@ -1,7 +1,7 @@
 import prisma from "../../prisma/prisma";
 import { Pet, type PetStatus, type Species } from "@prisma/client";
 import { PetDtoCreate, PetDtoUpdate, PetImageDtoCreate } from "./pets.dto";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 
 class PetService {
   async create(petData: PetDtoCreate, userId: string): Promise<Pet> {

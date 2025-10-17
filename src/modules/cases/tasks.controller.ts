@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import TasksService from "./tasks.service";
 import { CreateTaskSchema, TasksQuerySchema, UpdateTaskSchema } from "./tasks.dto";
-import { paginatedResponse } from "@/utils/response";
-import { IdParamSchema } from "@/utils/validation";
+import { paginatedResponse } from "../../utils/response";
+import { IdParamSchema } from "../../utils/validation";
 
 class TasksController {
   async getById(req: Request, res: Response, next: NextFunction) {

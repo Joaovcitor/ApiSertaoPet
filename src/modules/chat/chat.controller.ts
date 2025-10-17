@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import ChatService from "./chat.service";
-import { asyncHandler, createError } from "@/core/middleware/errorHandler";
-import { successResponse, paginatedResponse } from "@/utils/response";
+import { asyncHandler, createError } from "../../core/middleware/errorHandler";
+import { successResponse, paginatedResponse } from "../../utils/response";
 import type { CreateConversationDto, MessagesQuery } from "./chat.dto";
 
 class ChatController {

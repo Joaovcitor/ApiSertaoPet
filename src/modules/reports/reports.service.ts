@@ -1,5 +1,5 @@
 import { ReportCreateDto, ReportUpdateDto } from "./reports.dto";
-import prisma from "@/prisma/prisma";
+import prisma from "../../prisma/prisma";
 
 export const ReportsService = {
   create: async (dto: ReportCreateDto, userId: string) => {

@@ -1,11 +1,11 @@
-import { AdoptionService } from "@/modules/adoption/adoption.service";
+import { AdoptionService } from "./adoption.service";
 import {
   updateStatusDto,
   adoptionInterest,
   adoptionProcessDtoCreate,
 } from "@/modules/adoption/adoption.dto";
 import { Request, Response, NextFunction } from "express";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 import PointsService from "../points/points.service";
 import BadgeService from "../badge/badge.service";
 import { ActivityType } from "@prisma/client";
@@ -62,7 +62,7 @@ class AdoptionController {
         action: ActivityType.ADOPTION,
         points: 100,
         description: "Completou um processo de adoção",
-        metadata: { adoptionProcessId: adoptionProcess.id }
+        metadata: { adoptionProcessId: adoptionProcess.id },
       });
 
       // Verificar e conceder badges

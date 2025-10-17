@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import prisma from "../../prisma/prisma";
 import { User } from "@prisma/client";
 import type { UserDtoCreate, UserDtoUpdate } from "./users.dto";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 
 class UserService {
   async create(userData: UserDtoCreate): Promise<User> {

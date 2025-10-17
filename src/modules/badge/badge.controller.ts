@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import BadgeService from "./badge.service";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 
 class BadgeController {
   /**

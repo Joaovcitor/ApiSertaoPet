@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { CreateOrganizationSchema } from "./organizations.dto";
 import OrganizationsService from "./organizations.service";
-import { paginatedResponse } from "@/utils/response";
+import { paginatedResponse } from "../../utils/response";
 import { UpdateOrganizationSchema, AddMemberSchema } from "./organizations.dto";
 
 class OrganizationsController {

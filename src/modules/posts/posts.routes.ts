@@ -1,6 +1,6 @@
 import PostsController from "./posts.controller";
 import { Router } from "express";
-import { authenticateToken } from "@/core/middleware/auth";
+import { authenticateToken } from "../../core/middleware/auth";
 const postsRouter = Router();
 
 postsRouter.post("/", authenticateToken, PostsController.create);

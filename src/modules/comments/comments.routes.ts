@@ -1,7 +1,7 @@
 import { Router } from "express";
 import CommentController from "./comments.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateQuery } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateQuery } from "../../utils/validation";
 import { CommentsQuerySchema } from "./comments.dto";
 
 const commentRouter = Router();

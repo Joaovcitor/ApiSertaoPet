@@ -1,7 +1,7 @@
 import { Router } from "express";
 import AttachmentsController from "./attachments.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateQuery, validateParams } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateQuery, validateParams } from "../../utils/validation";
 import {
   AttachmentsQuerySchema,
   AttachmentIdParamSchema,

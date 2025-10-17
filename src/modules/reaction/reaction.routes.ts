@@ -1,7 +1,7 @@
 import { Router } from "express";
 import reactionController from "./reaction.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateQuery } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateQuery } from "../../utils/validation";
 import { ReactionsQuerySchema } from "./reaction.dto";
 
 const reactionRouter = Router();

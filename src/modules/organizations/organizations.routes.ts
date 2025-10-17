@@ -1,7 +1,7 @@
 import { Router } from "express";
 import OrganizationsController from "./organizations.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateQuery, PaginationQuerySchema, validateParams, IdParamSchema, validateSchema } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateQuery, PaginationQuerySchema, validateParams, IdParamSchema, validateSchema } from "../../utils/validation";
 import { UpdateOrganizationSchema, AddMemberSchema } from "./organizations.dto";
 import CasesController from "../cases/cases.controller";
 import { CreateCaseSchema, CasesQuerySchema } from "../cases/cases.dto";

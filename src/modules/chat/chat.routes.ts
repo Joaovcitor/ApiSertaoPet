@@ -1,7 +1,7 @@
 import { Router } from "express";
 import ChatController from "./chat.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateSchema, validateParams, validateQuery } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateSchema, validateParams, validateQuery } from "../../utils/validation";
 import {
   CreateConversationSchema,
   ConversationIdParamSchema,

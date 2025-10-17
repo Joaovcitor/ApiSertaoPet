@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import CasesService from "./cases.service";
 import { CreateCaseSchema, UpdateCaseSchema, CasesQuerySchema } from "./cases.dto";
-import { paginatedResponse } from "@/utils/response";
-import { IdParamSchema } from "@/utils/validation";
+import { paginatedResponse } from "../../utils/response";
+import { IdParamSchema } from "../../utils/validation";
 
 class CasesController {
   async createForOrg(req: Request, res: Response, next: NextFunction) {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import BadgeController from "./badge.controller";
-import { authenticateToken } from "@/core/middleware/auth";
+import { authenticateToken } from "../../core/middleware/auth";
 
 const router = Router();
 

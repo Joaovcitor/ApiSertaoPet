@@ -1,7 +1,7 @@
 import { Server as HttpServer } from "http";
 import { Server as IOServer, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
-import prisma from "@/prisma/prisma";
+import prisma from "../prisma/prisma";
 import signature from "cookie-signature"; // dessinar cookie assinado
 
 let io: IOServer | null = null;

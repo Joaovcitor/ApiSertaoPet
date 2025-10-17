@@ -1,6 +1,6 @@
 import { Router } from "express";
 import AdoptionController from "./adoption.controller";
-import { authenticateToken } from "@/core/middleware/auth";
+import { authenticateToken } from "../../core/middleware/auth";
 
 const adoptionRouter = Router();
 

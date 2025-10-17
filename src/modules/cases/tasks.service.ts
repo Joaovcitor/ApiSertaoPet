@@ -1,5 +1,5 @@
-import prisma from "@/prisma/prisma";
-import { createError } from "@/core/middleware/errorHandler";
+import prisma from "../../prisma/prisma";
+import { createError } from "../../core/middleware/errorHandler";
 import type { CreateTaskDto, TasksQuery, UpdateTaskDto } from "./tasks.dto";
 import { Prisma } from "@prisma/client";
 

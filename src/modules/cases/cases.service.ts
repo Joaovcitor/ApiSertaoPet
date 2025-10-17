@@ -1,5 +1,5 @@
-import prisma from "@/prisma/prisma";
-import { createError } from "@/core/middleware/errorHandler";
+import prisma from "../../prisma/prisma";
+import { createError } from "../../core/middleware/errorHandler";
 import type { CasesQuery, CreateCaseDto, UpdateCaseDto } from "./cases.dto";
 import { Prisma } from "@prisma/client";
 

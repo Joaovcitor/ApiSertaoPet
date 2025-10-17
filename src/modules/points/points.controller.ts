@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import PointsService from "./points.service";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 import { ActivityType } from "@prisma/client";
 
 class PointsController {

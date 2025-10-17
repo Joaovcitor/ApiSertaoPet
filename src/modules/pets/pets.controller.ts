@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import PetService from "./pets.service";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 import { PetDtoCreate, PetDtoUpdate } from "./pets.dto";
 import PointsService from "../points/points.service";
 import BadgeService from "../badge/badge.service";

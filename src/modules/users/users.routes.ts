@@ -1,7 +1,7 @@
 import { Router } from "express";
 import UserController from "./users.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { handleMulterError, uploadSingleImage } from "@/core/middleware/upload";
+import { authenticateToken } from "../../core/middleware/auth";
+import { handleMulterError, uploadSingleImage } from "../../core/middleware/upload";
 
 const userRoutes = Router();
 

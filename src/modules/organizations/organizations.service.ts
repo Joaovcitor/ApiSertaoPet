@@ -1,6 +1,6 @@
-import prisma from "@/prisma/prisma";
+import prisma from "../../prisma/prisma";
 import { Prisma } from "@prisma/client";
-import { createError } from "@/core/middleware/errorHandler";
+import { createError } from "../../core/middleware/errorHandler";
 import {
   CreateOrganizationDto,
   UpdateOrganizationDto,

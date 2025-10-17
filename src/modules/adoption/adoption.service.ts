@@ -1,5 +1,5 @@
-import { createError } from "@/core/middleware/errorHandler";
-import prisma from "@/prisma/prisma";
+import { createError } from "../../core/middleware/errorHandler";
+import prisma from "../../prisma/prisma";
 import type {
   adoptionInterest,
   adoptionProcessDtoCreate,

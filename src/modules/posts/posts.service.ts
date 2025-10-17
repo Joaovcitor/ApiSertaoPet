@@ -1,4 +1,4 @@
-import prisma from "@/prisma/prisma";
+import prisma from "../../prisma/prisma";
 import { CreatePostDto, type PostsQuery } from "./posts.dto";
 
 class PostsService {

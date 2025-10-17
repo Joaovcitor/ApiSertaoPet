@@ -1,7 +1,7 @@
 import { Router } from "express";
 import TasksController from "./tasks.controller";
-import { authenticateToken } from "@/core/middleware/auth";
-import { validateSchema, validateParams, IdParamSchema } from "@/utils/validation";
+import { authenticateToken } from "../../core/middleware/auth";
+import { validateSchema, validateParams, IdParamSchema } from "../../utils/validation";
 import { UpdateTaskSchema } from "./tasks.dto";
 
 const tasksRouter = Router();
