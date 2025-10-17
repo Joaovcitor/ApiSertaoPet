@@ -3,7 +3,7 @@ import {
   updateStatusDto,
   adoptionInterest,
   adoptionProcessDtoCreate,
-} from "@/modules/adoption/adoption.dto";
+} from "./adoption.dto";
 import { Request, Response, NextFunction } from "express";
 import { createError } from "../../core/middleware/errorHandler";
 import PointsService from "../points/points.service";

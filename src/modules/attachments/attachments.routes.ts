@@ -9,7 +9,7 @@ import {
 import {
   uploadImages,
   handleMulterError,
-} from "@/core/middleware/upload";
+} from "../../core/middleware/upload";
 
 const attachmentsRouter = Router();
 
