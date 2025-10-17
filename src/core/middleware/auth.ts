@@ -11,6 +11,7 @@ declare global {
         id: string;
         email: string;
         name?: string;
+        role?: string;
       };
     }
   }
@@ -40,6 +41,7 @@ export const authenticateToken = async (
         id: true,
         email: true,
         name: true,
+        role: true,
       },
     });
 
@@ -82,6 +84,7 @@ export const optionalAuth = async (
           id: true,
           email: true,
           name: true,
+          role: true,
         },
       });
 

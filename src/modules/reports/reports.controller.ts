@@ -1,6 +1,9 @@
 import { ReportsService } from "./reports.service";
 import { Request, Response, NextFunction } from "express";
 import { ReportCreateDto, ReportUpdateDto } from "./reports.dto";
+import PointsService from "../points/points.service";
+import BadgeService from "../badge/badge.service";
+import { ActivityType } from "@prisma/client";
 
 class ReportsController {
   create = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,6 +29,21 @@ class ReportsController {
       
       const userId = req.user?.id || "";
       const report = await ReportsService.create(dto, userId);
+
+      // Adicionar pontos por criar report (apenas se usuário autenticado)
+      if (userId) {
+        await PointsService.addPoints({
+          userId,
+          action: ActivityType.REPORT,
+          points: 30,
+          description: `Criou um report de ${dto.type}`,
+          metadata: { reportId: report.id, reportType: dto.type }
+        });
+
+        // Verificar e conceder badges
+        await BadgeService.checkAndAwardBadges(userId);
+      }
+
       res.status(201).json(report);
     } catch (error) {
       next(error);
@@ -50,9 +68,9 @@ class ReportsController {
         return res.status(404).json({ message: "Denúncia não encontrada" });
       }
       
-      res.status(200).json(report);
+      return res.status(200).json(report);
     } catch (error) {
-      next(error);
+      return next(error);
     }
   };
 

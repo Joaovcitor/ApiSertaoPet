@@ -6,6 +6,9 @@ import {
 } from "@/modules/adoption/adoption.dto";
 import { Request, Response, NextFunction } from "express";
 import { createError } from "@/core/middleware/errorHandler";
+import PointsService from "../points/points.service";
+import BadgeService from "../badge/badge.service";
+import { ActivityType } from "@prisma/client";
 
 class AdoptionController {
   async adoptionInterestCreate(
@@ -52,6 +55,19 @@ class AdoptionController {
         adoptionProcessDto,
         userId
       );
+
+      // Adicionar pontos por completar adoção
+      await PointsService.addPoints({
+        userId,
+        action: ActivityType.ADOPTION,
+        points: 100,
+        description: "Completou um processo de adoção",
+        metadata: { adoptionProcessId: adoptionProcess.id }
+      });
+
+      // Verificar e conceder badges
+      await BadgeService.checkAndAwardBadges(userId);
+
       res.status(201).json(adoptionProcess);
     } catch (error) {
       next(error);

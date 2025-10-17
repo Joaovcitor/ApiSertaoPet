@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import PetService from "./pets.service";
 import { createError } from "@/core/middleware/errorHandler";
 import { PetDtoCreate, PetDtoUpdate } from "./pets.dto";
+import PointsService from "../points/points.service";
+import BadgeService from "../badge/badge.service";
+import { ActivityType } from "@prisma/client";
 
 class PetController {
   async create(req: Request, res: Response, next: NextFunction) {
@@ -25,6 +28,18 @@ class PetController {
       };
 
       const pet = await PetService.create(petData, userId);
+
+      // Adicionar pontos por cadastrar pet
+      await PointsService.addPoints({
+        userId,
+        action: ActivityType.PET_REGISTRATION,
+        points: 50,
+        description: `Cadastrou o pet ${pet.name}`,
+        metadata: { petId: pet.id, petName: pet.name }
+      });
+
+      // Verificar e conceder badges
+      await BadgeService.checkAndAwardBadges(userId);
 
       res.status(201).json({
         success: true,
