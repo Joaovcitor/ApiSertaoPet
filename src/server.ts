@@ -61,7 +61,7 @@ export class Server {
       cors({
         origin:
           process.env.NODE_ENV === "production"
-            ? ["https://yourdomain.com"]
+            ? ["https://petcaatinga.caninext.com.br"]
             : [
                 "http://localhost:8080",
                 "http://localhost:5173",

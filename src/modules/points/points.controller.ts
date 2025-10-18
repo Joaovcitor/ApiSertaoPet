@@ -48,7 +48,11 @@ class PointsController {
   /**
    * Obtém histórico de atividades do usuário
    */
-  async getUserActivityHistory(req: Request, res: Response, next: NextFunction) {
+  async getUserActivityHistory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -58,7 +62,11 @@ class PointsController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
 
-      const activities = await PointsService.getUserActivityHistory(userId, page, limit);
+      const activities = await PointsService.getUserActivityHistory(
+        userId,
+        page,
+        limit
+      );
 
       res.json({
         success: true,
@@ -79,7 +87,12 @@ class PointsController {
 
       // Verificar se o usuário é admin
       if (req.user?.role !== "ADMIN") {
-        return next(createError("Acesso negado. Apenas administradores podem adicionar pontos manualmente", 403));
+        return next(
+          createError(
+            "Acesso negado. Apenas administradores podem adicionar pontos manualmente",
+            403
+          )
+        );
       }
 
       const activityLog = await PointsService.addPoints({
