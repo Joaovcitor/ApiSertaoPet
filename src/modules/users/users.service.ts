@@ -79,6 +79,39 @@ class UserService {
     }
     return user;
   }
+  async getPublicUser(id: string) {
+    const base = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        photo: true,
+        role: true,
+        createdAt: true,
+        posts: true,
+      },
+    });
+    if (!base) {
+      throw createError("Usuário não encontrado");
+    }
+    const [petsCount, postCount, adoptionsCompleted] = await Promise.all([
+      prisma.pet.count({
+        where: { userId: id },
+      }),
+      prisma.report.count({
+        where: { userId: id },
+      }),
+      prisma.adoptionProcess.count({
+        where: { userId: id, status: "COMPLETED" },
+      }),
+    ]);
+    return {
+      ...base,
+      petsCount,
+      postCount,
+      adoptionsCompleted,
+    };
+  }
   async updatePhoto(id: string, photo: string) {
     const user = await prisma.user.findUnique({
       where: { id },
@@ -116,6 +149,14 @@ class UserService {
     return await prisma.user.update({
       where: { id },
       data: { password: await bcrypt.hash(password, 10) },
+    });
+  }
+  async getAllUser() {
+    return await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
     });
   }
 }

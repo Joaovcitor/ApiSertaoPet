@@ -1,3 +1,4 @@
+import { AdoptionStatus } from "@prisma/client";
 import { createError } from "../../core/middleware/errorHandler";
 import prisma from "../../prisma/prisma";
 import type {
@@ -48,16 +49,35 @@ export const AdoptionService = {
     return adoptionProcess;
   },
   updateStatus: async (data: updateStatusDto, petId: string) => {
-    const { status, completedAt, rejectedAt } = data;
-    const adoptionProcess = await prisma.adoptionProcess.update({
-      where: { id: petId },
-      data: {
-        status,
-        completedAt,
-        rejectedAt,
-      },
+    const { status, completedAt, rejectedAt, id } = data;
+    const result = await prisma.$transaction(async (tsx) => {
+      const adoptionProcess = await tsx.adoptionProcess.update({
+        where: { id: id },
+        data: {
+          status,
+          completedAt,
+          rejectedAt,
+        },
+      });
+      const statusEnum = AdoptionStatus[status];
+      if (statusEnum === AdoptionStatus.COMPLETED) {
+        await tsx.pet.update({
+          where: { id: petId },
+          data: {
+            isAvailable: false,
+          },
+        });
+        await tsx.user.update({
+          where: { id: adoptionProcess.userId },
+          data: {
+            points: {
+              increment: 100,
+            },
+          },
+        });
+      }
     });
-    return adoptionProcess;
+    return result;
   },
   getAdoptionInterest: async (userId: string) => {
     const adoptionInterest = await prisma.adoptionInterest.findMany({

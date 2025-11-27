@@ -35,7 +35,7 @@ class PetController {
         action: ActivityType.PET_REGISTRATION,
         points: 50,
         description: `Cadastrou o pet ${pet.name}`,
-        metadata: { petId: pet.id, petName: pet.name }
+        metadata: { petId: pet.id, petName: pet.name },
       });
 
       // Verificar e conceder badges
@@ -53,7 +53,9 @@ class PetController {
 
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const pets = await PetService.getAll();
+      const page = Number(req.query.page ?? 1);
+      const pageSize = Number(req.query.pageSize ?? 20);
+      const pets = await PetService.getAll(page, pageSize);
       res.json({
         success: true,
         data: pets,

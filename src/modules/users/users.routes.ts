@@ -20,5 +20,7 @@ userRoutes.get("/stats", authenticateToken, UserController.stats);
 userRoutes.get("/profile", authenticateToken, UserController.get);
 userRoutes.get("/:id", UserController.get);
 userRoutes.put("/", authenticateToken, UserController.update);
+userRoutes.get("/", authenticateToken, UserController.getAll);
+userRoutes.get("/public/:id", UserController.getPublic);
 
 export default userRoutes;

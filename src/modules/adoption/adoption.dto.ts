@@ -15,4 +15,5 @@ export interface updateStatusDto {
   status: AdoptionStatus;
   completedAt?: Date;
   rejectedAt?: Date;
+  id: string;
 }

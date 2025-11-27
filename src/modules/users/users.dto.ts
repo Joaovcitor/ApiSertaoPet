@@ -10,4 +10,5 @@ export interface UserDtoUpdate {
   password?: string;
   name?: string;
   phone?: string;
+  bio?: string;
 }

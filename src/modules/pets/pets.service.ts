@@ -36,23 +36,35 @@ class PetService {
     return result.pet;
   }
 
-  async getAll(): Promise<Pet[]> {
-    return await prisma.pet.findMany({
-      include: {
-        petImages: true,
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+  async getAll(page = 1, pageSize = 20) {
+    const currentPage = Math.max(1, Number(page));
+    const size = Math.max(1, Math.min(100, Number(pageSize)));
+    const skip = (currentPage - 1) * size;
+    const [items, total] = await Promise.all([
+      prisma.pet.findMany({
+        skip,
+        take: size,
+        orderBy: { createdAt: "desc" },
+        include: {
+          petImages: true,
+          user: {
+            select: {
+              name: true,
+            },
           },
         },
-        adoptionProcesses: true,
+      }),
+      prisma.pet.count(),
+    ]);
+    return {
+      items,
+      meta: {
+        page: currentPage,
+        pageSize: size,
+        total,
+        lastPage: Math.ceil(total / size),
       },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    };
   }
 
   async getById(id: string): Promise<Pet | null> {

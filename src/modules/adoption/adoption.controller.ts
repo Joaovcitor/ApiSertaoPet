@@ -34,7 +34,8 @@ class AdoptionController {
   async updateStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const updateStatusDto: updateStatusDto = req.body;
-      const petId = req.body.id;
+      console.log(updateStatusDto);
+      const petId = req.body.petId;
       const adoptionProcess = await AdoptionService.updateStatus(
         updateStatusDto,
         petId
@@ -55,18 +56,6 @@ class AdoptionController {
         adoptionProcessDto,
         userId
       );
-
-      // Adicionar pontos por completar adoção
-      await PointsService.addPoints({
-        userId,
-        action: ActivityType.ADOPTION,
-        points: 100,
-        description: "Completou um processo de adoção",
-        metadata: { adoptionProcessId: adoptionProcess.id },
-      });
-
-      // Verificar e conceder badges
-      await BadgeService.checkAndAwardBadges(userId);
 
       res.status(201).json(adoptionProcess);
     } catch (error) {

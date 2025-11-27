@@ -22,6 +22,15 @@ class UserController {
     const user = await usersService.get(req.user.id);
     successResponse(res, user, "Usuário obtido com sucesso");
   });
+  getAll = asyncHandler(async (req: Request, res: Response) => {
+    const users = await usersService.getAllUser();
+    successResponse(res, users, "Usuários obtidos com sucesso");
+  });
+  getPublic = asyncHandler(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const profile = await usersService.getPublicUser(id);
+    successResponse(res, profile, "Perfil obtido com sucesso");
+  });
   stats = asyncHandler(async (req: Request, res: Response) => {
     if (!req.user) {
       throw createError("Usuário não autenticado");
