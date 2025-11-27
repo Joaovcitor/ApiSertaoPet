@@ -10,10 +10,10 @@ class ReportsController {
     try {
       // Dados do formulário vêm do req.body
       const formData = req.body;
-      
+
       // Arquivos vêm do req.files (processados pelo Multer)
       const files = (req.files || []) as Express.Multer.File[];
-      
+
       // Construir o DTO com os dados do formulário
       const dto: ReportCreateDto = {
         type: formData.type,
@@ -24,25 +24,11 @@ class ReportsController {
         location: formData.location,
         species: formData.species,
         // Converter os arquivos em URLs/paths
-        images: files.map(file => `/uploads/${file.filename}`)
+        images: files.map((file) => `/uploads/${file.filename}`),
       };
-      
+
       const userId = req.user?.id || "";
       const report = await ReportsService.create(dto, userId);
-
-      // Adicionar pontos por criar report (apenas se usuário autenticado)
-      if (userId) {
-        await PointsService.addPoints({
-          userId,
-          action: ActivityType.REPORT,
-          points: 30,
-          description: `Criou um report de ${dto.type}`,
-          metadata: { reportId: report.id, reportType: dto.type }
-        });
-
-        // Verificar e conceder badges
-        await BadgeService.checkAndAwardBadges(userId);
-      }
 
       res.status(201).json(report);
     } catch (error) {
@@ -65,11 +51,11 @@ class ReportsController {
     try {
       const { id } = req.params;
       const report = await ReportsService.getById(id);
-      
+
       if (!report) {
         return res.status(404).json({ message: "Denúncia não encontrada" });
       }
-      
+
       return res.status(200).json(report);
     } catch (error) {
       return next(error);
